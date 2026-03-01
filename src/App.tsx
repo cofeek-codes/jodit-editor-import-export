@@ -1,14 +1,15 @@
-import { useCallback, useMemo, useRef, useState } from 'react'
+import { useCallback, useMemo, useRef, useState, type ChangeEvent } from 'react'
 
 import './App.css'
 import DialogWrap from '@rc-component/dialog'
 import JoditEditor from 'jodit-react'
+import docx2html from 'docx2html'
 
 const App = () => {
   const [modalVisible, setModalVisible] = useState<boolean>(false)
   const [content, setContent] = useState<string>('')
-  const editor = useRef(null)
-
+  const editorRef = useRef(null)
+  const docxFileInputRef = useRef<HTMLInputElement>(null)
   const editorConfig = useMemo(
     () => ({
       readonly: false,
@@ -48,6 +49,23 @@ const App = () => {
     // You can handle onChange here if needed
   }, [])
 
+  const selectDocxFile = (e: any) => {
+    console.log('select docx file pressed')
+    docxFileInputRef.current?.click()
+  }
+  const importDocx = (e: ChangeEvent<HTMLInputElement, HTMLInputElement>) => {
+    console.log('import from word pressed')
+    if (e.target.files) {
+      const file = e.target.files[0]
+      docx2html(file).then((html: any) => {
+        setContent(html.toString())
+      })
+    }
+  }
+  const exportPDF = () => {
+    console.log('export to pdf pressed')
+  }
+
   return (
     <div className='h-100 container-fluid d-flex flex-row justify-content-center align-items-center'>
       <button
@@ -65,11 +83,22 @@ const App = () => {
       >
         <>
           <div className='mb-3 d-flex justify-content-evenly'>
-            <button className='btn btn-primary'>Импортировать из Word</button>
-            <button className='btn btn-danger'>Экспортировать в PDF</button>
+            <button onClick={selectDocxFile} className='btn btn-primary'>
+              Импортировать из Word
+            </button>
+            <input
+              type='file'
+              accept='.doc,.docx,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+              className='d-none'
+              ref={docxFileInputRef}
+              onChange={importDocx}
+            />
+            <button onClick={exportPDF} className='btn btn-danger'>
+              Экспортировать в PDF
+            </button>
           </div>
           <JoditEditor
-            ref={editor}
+            ref={editorRef}
             value={content}
             config={editorConfig}
             tabIndex={1}
