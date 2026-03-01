@@ -63,14 +63,20 @@ const App = () => {
         animation='fade'
         maskAnimation='fade'
       >
-        <JoditEditor
-          ref={editor}
-          value={content}
-          config={editorConfig}
-          tabIndex={1}
-          onBlur={handleBlur}
-          onChange={handleChange}
-        />
+        <>
+          <div className='mb-3 d-flex justify-content-evenly'>
+            <button className='btn btn-primary'>Импортировать из Word</button>
+            <button className='btn btn-danger'>Экспортировать в PDF</button>
+          </div>
+          <JoditEditor
+            ref={editor}
+            value={content}
+            config={editorConfig}
+            tabIndex={1}
+            onBlur={handleBlur}
+            onChange={handleChange}
+          />
+        </>
       </DialogWrap>
     </div>
   )
