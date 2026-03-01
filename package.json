@@ -13,6 +13,7 @@
     "@rc-component/dialog": "^1.8.4",
     "bootstrap": "^5.3.8",
     "docx2html": "^1.3.2",
+    "html2pdf.js": "^0.14.0",
     "jodit-react": "^5.3.21",
     "react": "^19.2.0",
     "react-dom": "^19.2.0"

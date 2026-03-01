@@ -4,6 +4,7 @@ import './App.css'
 import DialogWrap from '@rc-component/dialog'
 import JoditEditor from 'jodit-react'
 import docx2html from 'docx2html'
+import html2pdf from 'html2pdf.js'
 
 const App = () => {
   const [modalVisible, setModalVisible] = useState<boolean>(false)
@@ -62,8 +63,20 @@ const App = () => {
       })
     }
   }
+
   const exportPDF = () => {
     console.log('export to pdf pressed')
+    console.log(content)
+    html2pdf()
+      .set({
+        margin: 1,
+        filename: 'document.pdf',
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true, allowTaint: true },
+        jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' },
+      })
+      .from(content)
+      .save()
   }
 
   return (
