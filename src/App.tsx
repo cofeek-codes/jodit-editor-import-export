@@ -5,6 +5,7 @@ import DialogWrap from '@rc-component/dialog'
 import JoditEditor from 'jodit-react'
 import docx2html from 'docx2html'
 import html2pdf from 'html2pdf.js'
+import blobToBase64 from 'blob-to-base64'
 
 const App = () => {
   const [modalVisible, setModalVisible] = useState<boolean>(false)
@@ -50,6 +51,8 @@ const App = () => {
     // You can handle onChange here if needed
   }, [])
 
+  // import from DOCX
+
   const selectDocxFile = (e: any) => {
     console.log('select docx file pressed')
     docxFileInputRef.current?.click()
@@ -64,9 +67,50 @@ const App = () => {
     }
   }
 
+  // export to PDF
+
+  const convertImageBlobsToBase64 = async () => {
+    const div = document.createElement('div')
+    div.innerHTML = content
+    const imgs = Array.from(div.querySelectorAll('img[src^="blob:"]'))
+
+    const promises = imgs.map((img: any) =>
+      fetch(img.src)
+        .then((res) => res.blob())
+        .then(
+          (blob) =>
+            new Promise((resolve, reject) => {
+              blobToBase64(blob, (error: any, base64: string) => {
+                if (error) reject(new Error('Failed to convert blob to base64'))
+                else {
+                  img.src = base64
+                  resolve(null)
+                }
+              })
+            }),
+        ),
+    )
+
+    try {
+      await Promise.all(promises)
+      console.log(div.innerHTML)
+      return div.innerHTML
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
   const exportPDF = () => {
     console.log('export to pdf pressed')
     console.log(content)
+    convertImageBlobsToBase64().then((fixedContent) => {
+      _exportPDF(fixedContent!)
+    })
+  }
+
+  const _exportPDF = (fixedContent: string) => {
+    console.log('fixed content')
+    console.log(fixedContent)
     html2pdf()
       .set({
         margin: 1,
@@ -75,7 +119,7 @@ const App = () => {
         html2canvas: { scale: 2, useCORS: true, allowTaint: true },
         jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' },
       })
-      .from(content)
+      .from(fixedContent)
       .save()
   }
 
