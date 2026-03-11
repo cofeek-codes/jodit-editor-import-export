@@ -135,6 +135,7 @@ const App = () => {
         title='Редактирование документа'
         onClose={() => setModalVisible(false)}
         visible={modalVisible}
+        maskClosable={false}
         animation='fade'
         maskAnimation='fade'
       >
